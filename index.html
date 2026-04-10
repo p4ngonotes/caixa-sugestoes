@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Caixa de Sugestões</title>
+</head>
+
+<body>
+
+<h1>Caixa de Sugestões da Escola</h1>
+
+<textarea id="sugestao" placeholder="Digite sua sugestão"></textarea>
+<br><br>
+
+<input id="turma" placeholder="Turma (opcional)">
+<br><br>
+
+<input id="nome" placeholder="Nome (opcional)">
+<br><br>
+
+<button id="botao">Enviar Sugestão</button>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const url = "https://tjoormwrszetarhlfpmt.supabase.co"
+const key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqb29ybXdyc3pldGFyaGxmcG10Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTg0NjYsImV4cCI6MjA4OTA5NDQ2Nn0.Vav8IglXQz2uGEwcUcOCbG47ISTUfi12uuZWzcGac_s"
+
+const supabaseClient = supabase.createClient(url, key)
+
+document.getElementById("botao").addEventListener("click", async function(){
+
+let sugestao = document.getElementById("sugestao").value
+let turma = document.getElementById("turma").value
+let nome = document.getElementById("nome").value
+
+await supabaseClient.from("sugestoes").insert([
+{
+sugestao: sugestao,
+turma: turma,
+nome: nome,
+status: "pendente"
+}
+])
+
+alert("Sugestão enviada!")
+
+})
+
+</script>
+
+</body>
+</html>
