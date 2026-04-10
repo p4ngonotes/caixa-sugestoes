@@ -22,9 +22,12 @@ const supabase = window.supabase.createClient(supabaseUrl, supabaseKey)
 // 🔄 Carregar sugestões pendentes
 async function carregarSugestoes() {
   const { data, error } = await supabase
-    .from('sugestoes')
-    .select('*')
-    .eq('status', 'pendente')
+  .from('sugestoes')
+  .select('*')
+  .eq('status', 'pendente')
+
+console.log("DATA:", data)
+console.log("ERROR:", error)
 
   const lista = document.getElementById("lista")
   lista.innerHTML = ""
