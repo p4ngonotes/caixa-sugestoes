@@ -18,13 +18,11 @@ const supabaseKey = 'sb_publishable_zOCfyuybTdMRFnc__LB_Sg_puROfwrD'
 
 const client = window.supabase.createClient(supabaseUrl, supabaseKey)
 
+// 🔄 Carregar TODAS as sugestões
 async function carregarSugestoes() {
   const { data, error } = await client
     .from('sugestoes')
     .select('*')
-
-  console.log("DATA:", data)
-  console.log("ERROR:", error)
 
   const lista = document.getElementById("lista")
   lista.innerHTML = ""
@@ -36,32 +34,40 @@ async function carregarSugestoes() {
 
   data.forEach(s => {
     const div = document.createElement("div")
+
     div.innerHTML = `
-      <p>${s.mensagem}</p>
-      <button onclick="aprovar(${s.id})">Aprovar</button>
-      <button onclick="rejeitar(${s.id})">Rejeitar</button>
+      <p><strong>Sugestão:</strong> ${s.sugestao}</p>
+      <p><strong>Turma:</strong> ${s.turma || "Não informado"}</p>
+      <button onclick="aprovar(${s.id})">✅ Aprovar</button>
+      <button onclick="rejeitar(${s.id})">❌ Rejeitar</button>
       <hr>
     `
+
     lista.appendChild(div)
   })
 }
 
+// ✅ Aprovar
 async function aprovar(id) {
-  await client.from('sugestoes')
+  await client
+    .from('sugestoes')
     .update({ status: 'aprovado' })
     .eq('id', id)
 
   carregarSugestoes()
 }
 
+// ❌ Rejeitar
 async function rejeitar(id) {
-  await client.from('sugestoes')
+  await client
+    .from('sugestoes')
     .update({ status: 'rejeitado' })
     .eq('id', id)
 
   carregarSugestoes()
 }
 
+// 🚀 Iniciar
 carregarSugestoes()
 </script>
 
