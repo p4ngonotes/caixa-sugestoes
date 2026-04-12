@@ -3,12 +3,57 @@
 <head>
   <meta charset="UTF-8">
   <title>Painel da Coordenação</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #020617;
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .topo img {
+      width: 70px;
+      margin-bottom: 10px;
+      filter: brightness(0) invert(1);
+    }
+
+    .topo h1 {
+      color: #a5b4fc;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .card {
+      background: #0f172a;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      border-left: 4px solid #6366f1;
+    }
+
+    .turma {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+  </style>
 </head>
 
 <body>
 
-<h1>Sugestões Aprovadas</h1>
-<div id="lista"></div>
+<div class="topo">
+  <img src="https://cdn-icons-png.flaticon.com/512/616/616490.png">
+  <h1>Adherbal Vox</h1>
+  <p>Painel da Coordenação</p>
+</div>
+
+<div class="container" id="lista"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
@@ -16,12 +61,11 @@
 
 // 🔒 SENHA
 const senhaCorreta = "itape0607"
-
-const senha = prompt("SENHA DA COORDENAÇÃO:")
+const senha = prompt("Senha da coordenação:")
 
 if (senha !== senhaCorreta) {
   document.body.innerHTML = "<h1>Acesso negado</h1>"
-  throw new Error("Bloqueado")
+  throw new Error("bloqueado")
 }
 
 // 🔗 CONEXÃO
@@ -47,11 +91,11 @@ async function carregarSugestoes() {
 
   data.forEach(s => {
     const div = document.createElement("div")
+    div.className = "card"
 
     div.innerHTML = `
       <p><strong>${s.sugestao}</strong></p>
-      <p>Turma: ${s.turma || "Não informado"}</p>
-      <hr>
+      <p class="turma">Turma: ${s.turma || "Não informado"}</p>
     `
 
     lista.appendChild(div)
