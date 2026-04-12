@@ -18,17 +18,18 @@ const supabaseKey = 'sb_publishable_zOCfyuybTdMRFnc__LB_Sg_puROfwrD'
 
 const client = window.supabase.createClient(supabaseUrl, supabaseKey)
 
-// 🔄 Carregar TODAS as sugestões
+// 🔄 Carregar sugestões PENDENTES
 async function carregarSugestoes() {
-  const { data, error } = await client
+  const { data } = await client
     .from('sugestoes')
     .select('*')
+    .eq('status', 'pendente')
 
   const lista = document.getElementById("lista")
   lista.innerHTML = ""
 
   if (!data || data.length === 0) {
-    lista.innerHTML = "<p>Nenhuma sugestão encontrada.</p>"
+    lista.innerHTML = "<p>Nenhuma sugestão pendente.</p>"
     return
   }
 
@@ -54,7 +55,7 @@ async function aprovar(id) {
     .update({ status: 'aprovado' })
     .eq('id', id)
 
-  carregarSugestoes()
+  location.reload()
 }
 
 // ❌ Rejeitar
@@ -64,7 +65,7 @@ async function rejeitar(id) {
     .update({ status: 'rejeitado' })
     .eq('id', id)
 
-  carregarSugestoes()
+  location.reload()
 }
 
 // 🚀 Iniciar
