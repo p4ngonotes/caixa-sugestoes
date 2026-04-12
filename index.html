@@ -90,14 +90,44 @@ const supabaseKey = 'sb_publishable_zOCfyuybTdMRFnc__LB_Sg_puROfwrD'
 const client = window.supabase.createClient(supabaseUrl, supabaseKey)
 
 async function enviar() {
-  const sugestao = document.getElementById("sugestao").value
-  const turma = document.getElementById("turma").value
+  let sugestao = document.getElementById("sugestao").value
+  let turma = document.getElementById("turma").value
 
-  if (!sugestao) {
-    alert("Escreva uma sugestão!")
+  // 🔒 VALIDAÇÃO BÁSICA
+  if (sugestao.trim() === "") {
+    alert("Digite uma sugestão válida!")
     return
   }
 
+  // 🔒 TAMANHO
+  if (sugestao.length < 10) {
+    alert("A sugestão precisa ter pelo menos 10 caracteres!")
+    return
+  }
+
+  if (sugestao.length > 300) {
+    alert("Máximo de 300 caracteres!")
+    return
+  }
+
+  // 🔒 FILTRO DE PALAVRAS
+  const proibidas = [
+    "merda","porra","caralho","foda","foder","nazismo","fuder",
+    "pika","piroca","buceta","viado","gay","abusador","abusado",
+    "molestado","estuprado","estupro","estuprador","nazista",
+    "epstein","cu"
+  ]
+
+  let texto = sugestao.toLowerCase()
+
+  for (let palavra of proibidas) {
+    if (texto.includes(palavra)) {
+      alert("Sua sugestão contém palavras inadequadas!")
+      return
+    }
+  }
+
+  // 🚀 ENVIO
   await client.from('sugestoes').insert([
     {
       sugestao: sugestao,
@@ -106,7 +136,7 @@ async function enviar() {
     }
   ])
 
-  document.getElementById("msg").innerText = "Enviado com sucesso!"
+  document.getElementById("msg").innerText = "Enviado com sucesso! ✅"
 
   document.getElementById("sugestao").value = ""
   document.getElementById("turma").value = ""
