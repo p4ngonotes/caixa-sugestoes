@@ -93,24 +93,25 @@ async function enviar() {
   let sugestao = document.getElementById("sugestao").value
   let turma = document.getElementById("turma").value
 
-  // 🔒 VALIDAÇÃO BÁSICA
+  // 🔒 NÃO PERMITE VAZIO
   if (sugestao.trim() === "") {
     alert("Digite uma sugestão válida!")
     return
   }
 
-  // 🔒 TAMANHO
+  // 🔒 MÍNIMO
   if (sugestao.length < 10) {
     alert("A sugestão precisa ter pelo menos 10 caracteres!")
     return
   }
 
+  // 🔒 MÁXIMO
   if (sugestao.length > 300) {
     alert("Máximo de 300 caracteres!")
     return
   }
 
-  // 🔒 FILTRO DE PALAVRAS
+  // 🔒 PALAVRAS PROIBIDAS
   const proibidas = [
     "merda","porra","caralho","foda","foder","nazismo","fuder",
     "pika","piroca","buceta","viado","gay","abusador","abusado",
