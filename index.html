@@ -1,52 +1,116 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-<title>Caixa de Sugestões</title>
+  <meta charset="UTF-8">
+  <title>Caixa de Sugestões</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #1e293b;
+      padding: 30px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+    }
+
+    textarea {
+      resize: none;
+      height: 100px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: #6366f1;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #4f46e5;
+    }
+
+    .sucesso {
+      text-align: center;
+      margin-top: 10px;
+      color: #22c55e;
+    }
+  </style>
 </head>
 
 <body>
 
-<h1>Caixa de Sugestões da Escola</h1>
+<div class="container">
+  <h1>📩 Envie sua sugestão</h1>
 
-<textarea id="sugestao" placeholder="Digite sua sugestão"></textarea>
-<br><br>
+  <input type="text" id="turma" placeholder="Sua turma (opcional)">
+  <textarea id="sugestao" placeholder="Escreva sua sugestão..."></textarea>
 
-<input id="turma" placeholder="Turma (opcional)">
-<br><br>
+  <button onclick="enviar()">Enviar</button>
 
-<input id="nome" placeholder="Nome (opcional)">
-<br><br>
+  <div class="sucesso" id="msg"></div>
+</div>
 
-<button id="botao">Enviar Sugestão</button>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script>
+const supabaseUrl = 'https://tjoormwrszetarhlfpmt.supabase.co'
+const supabaseKey = 'sb_publishable_zOCfyuybTdMRFnc__LB_Sg_puROfwrD'
 
-const url = "https://tjoormwrszetarhlfpmt.supabase.co"
-const key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqb29ybXdyc3pldGFyaGxmcG10Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MTg0NjYsImV4cCI6MjA4OTA5NDQ2Nn0.Vav8IglXQz2uGEwcUcOCbG47ISTUfi12uuZWzcGac_s"
+const client = window.supabase.createClient(supabaseUrl, supabaseKey)
 
-const supabaseClient = supabase.createClient(url, key)
+async function enviar() {
+  const sugestao = document.getElementById("sugestao").value
+  const turma = document.getElementById("turma").value
 
-document.getElementById("botao").addEventListener("click", async function(){
+  if (!sugestao) {
+    alert("Escreva uma sugestão!")
+    return
+  }
 
-let sugestao = document.getElementById("sugestao").value
-let turma = document.getElementById("turma").value
-let nome = document.getElementById("nome").value
+  await client.from('sugestoes').insert([
+    {
+      sugestao: sugestao,
+      turma: turma,
+      status: "pendente"
+    }
+  ])
 
-await supabaseClient.from("sugestoes").insert([
-{
-sugestao: sugestao,
-turma: turma,
-nome: nome,
-status: "pendente"
+  document.getElementById("msg").innerText = "Sugestão enviada com sucesso! ✅"
+
+  document.getElementById("sugestao").value = ""
+  document.getElementById("turma").value = ""
 }
-])
-
-alert("Sugestão enviada!")
-
-})
-
 </script>
 
 </body>
