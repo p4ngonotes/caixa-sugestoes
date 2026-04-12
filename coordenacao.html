@@ -13,13 +13,26 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script>
+
+// 🔒 SENHA DA COORDENAÇÃO
+const senhaCorreta = "itape0607"
+
+const senha = prompt("Digite a senha da coordenação:")
+
+if (senha !== senhaCorreta) {
+  document.body.innerHTML = "<h1>Acesso negado</h1>"
+  throw new Error("Acesso bloqueado")
+}
+
+// 🔗 CONEXÃO
 const supabaseUrl = 'https://tjoormwrszetarhlfpmt.supabase.co'
 const supabaseKey = 'sb_publishable_zOCfyuybTdMRFnc__LB_Sg_puROfwrD'
 
 const client = window.supabase.createClient(supabaseUrl, supabaseKey)
 
+// 🔄 CARREGAR SÓ APROVADAS
 async function carregarSugestoes() {
-  const { data, error } = await client
+  const { data } = await client
     .from('sugestoes')
     .select('*')
     .eq('status', 'aprovado')
@@ -45,7 +58,9 @@ async function carregarSugestoes() {
   })
 }
 
+// 🚀 INICIAR
 carregarSugestoes()
+
 </script>
 
 </body>
