@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Caixa de Sugestões</title>
+  <title>Adherbal Vox</title>
 
   <style>
     body {
@@ -10,10 +10,34 @@
       background: linear-gradient(135deg, #0f172a, #1e293b);
       color: white;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .logo h1 {
+      margin: 0;
+      font-size: 28px;
+      color: #a5b4fc;
+    }
+
+    .logo p {
+      margin: 5px 0 0;
+      font-size: 14px;
+      color: #94a3b8;
+    }
+
+    .logo img {
+      width: 60px;
+      margin-bottom: 10px;
+      filter: brightness(0) invert(1);
     }
 
     .container {
@@ -25,7 +49,7 @@
       box-shadow: 0 0 25px rgba(0,0,0,0.6);
     }
 
-    h1 {
+    h2 {
       text-align: center;
       margin-bottom: 20px;
     }
@@ -73,8 +97,14 @@
 
 <body>
 
+<div class="logo">
+  <img src="https://cdn-icons-png.flaticon.com/512/616/616490.png" alt="Águia">
+  <h1>Adherbal Vox</h1>
+  <p>Sua voz na escola</p>
+</div>
+
 <div class="container">
-  <h1>📩 Envie sua sugestão</h1>
+  <h2>📩 Envie sua sugestão</h2>
 
   <input type="text" id="turma" placeholder="Sua turma (opcional)">
   <textarea id="sugestao" placeholder="Escreva sua sugestão..."></textarea>
