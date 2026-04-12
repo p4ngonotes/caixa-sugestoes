@@ -7,90 +7,57 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #0f172a, #1e293b);
+      background: #0f172a;
       color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      text-align: center;
       margin: 0;
+      padding: 20px;
     }
 
-    .logo {
-      text-align: center;
-      margin-bottom: 20px;
+    .logo img {
+      width: 80px;
+      margin-bottom: 10px;
     }
 
     .logo h1 {
       margin: 0;
-      font-size: 28px;
       color: #a5b4fc;
-    }
-
-    .logo p {
-      margin: 5px 0 0;
-      font-size: 14px;
-      color: #94a3b8;
-    }
-
-    .logo img {
-      width: 60px;
-      margin-bottom: 10px;
-      filter: brightness(0) invert(1);
     }
 
     .container {
       background: #1e293b;
-      padding: 30px;
-      border-radius: 16px;
-      width: 90%;
+      padding: 20px;
+      border-radius: 12px;
       max-width: 400px;
-      box-shadow: 0 0 25px rgba(0,0,0,0.6);
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
+      margin: 20px auto;
     }
 
     input, textarea {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
       border-radius: 8px;
       border: none;
-      outline: none;
-      font-size: 14px;
     }
 
     textarea {
-      resize: none;
-      height: 120px;
+      height: 100px;
     }
 
     button {
-      width: 100%;
-      padding: 14px;
+      padding: 12px;
+      width: 95%;
       border: none;
       border-radius: 10px;
       background: #6366f1;
       color: white;
       font-weight: bold;
       cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background: #4f46e5;
-      transform: scale(1.02);
     }
 
     .sucesso {
-      text-align: center;
       margin-top: 10px;
       color: #22c55e;
-      font-weight: bold;
     }
   </style>
 </head>
@@ -98,15 +65,15 @@
 <body>
 
 <div class="logo">
-  <img src="https://cdn-icons-png.flaticon.com/512/616/616490.png" alt="Águia">
+  <img src="https://cdn-icons-png.flaticon.com/512/616/616490.png">
   <h1>Adherbal Vox</h1>
   <p>Sua voz na escola</p>
 </div>
 
 <div class="container">
-  <h2>📩 Envie sua sugestão</h2>
+  <h2>Envie sua sugestão</h2>
 
-  <input type="text" id="turma" placeholder="Sua turma (opcional)">
+  <input type="text" id="turma" placeholder="Turma (opcional)">
   <textarea id="sugestao" placeholder="Escreva sua sugestão..."></textarea>
 
   <button onclick="enviar()">Enviar</button>
@@ -139,7 +106,7 @@ async function enviar() {
     }
   ])
 
-  document.getElementById("msg").innerText = "Sugestão enviada com sucesso! ✅"
+  document.getElementById("msg").innerText = "Enviado com sucesso!"
 
   document.getElementById("sugestao").value = ""
   document.getElementById("turma").value = ""
