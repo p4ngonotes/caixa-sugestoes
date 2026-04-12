@@ -14,14 +14,14 @@
 
 <script>
 
-// 🔒 SENHA DA COORDENAÇÃO
+// 🔒 SENHA
 const senhaCorreta = "itape0607"
 
-const senha = prompt("Digite a senha da coordenação:")
+const senha = prompt("SENHA DA COORDENAÇÃO:")
 
 if (senha !== senhaCorreta) {
   document.body.innerHTML = "<h1>Acesso negado</h1>"
-  throw new Error("Acesso bloqueado")
+  throw new Error("Bloqueado")
 }
 
 // 🔗 CONEXÃO
@@ -30,7 +30,7 @@ const supabaseKey = 'sb_publishable_zOCfyuybTdMRFnc__LB_Sg_puROfwrD'
 
 const client = window.supabase.createClient(supabaseUrl, supabaseKey)
 
-// 🔄 CARREGAR SÓ APROVADAS
+// 🔄 CARREGAR APROVADAS
 async function carregarSugestoes() {
   const { data } = await client
     .from('sugestoes')
@@ -49,8 +49,8 @@ async function carregarSugestoes() {
     const div = document.createElement("div")
 
     div.innerHTML = `
-      <p><strong>Sugestão:</strong> ${s.sugestao}</p>
-      <p><strong>Turma:</strong> ${s.turma || "Não informado"}</p>
+      <p><strong>${s.sugestao}</strong></p>
+      <p>Turma: ${s.turma || "Não informado"}</p>
       <hr>
     `
 
@@ -58,7 +58,6 @@ async function carregarSugestoes() {
   })
 }
 
-// 🚀 INICIAR
 carregarSugestoes()
 
 </script>
