@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel da Coordenação</title>
+</head>
+
+<body>
+
+<h1>Sugestões Aprovadas</h1>
+<div id="lista"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<script>
+const supabaseUrl = 'https://tjoormwrszetarhlfpmt.supabase.co'
+const supabaseKey = 'sb_publishable_zOCfyuybTdMRFnc__LB_Sg_puROfwrD'
+
+const client = window.supabase.createClient(supabaseUrl, supabaseKey)
+
+async function carregarSugestoes() {
+  const { data, error } = await client
+    .from('sugestoes')
+    .select('*')
+    .eq('status', 'aprovado')
+
+  const lista = document.getElementById("lista")
+  lista.innerHTML = ""
+
+  if (!data || data.length === 0) {
+    lista.innerHTML = "<p>Nenhuma sugestão aprovada ainda.</p>"
+    return
+  }
+
+  data.forEach(s => {
+    const div = document.createElement("div")
+
+    div.innerHTML = `
+      <p><strong>Sugestão:</strong> ${s.sugestao}</p>
+      <p><strong>Turma:</strong> ${s.turma || "Não informado"}</p>
+      <hr>
+    `
+
+    lista.appendChild(div)
+  })
+}
+
+carregarSugestoes()
+</script>
+
+</body>
+</html>
