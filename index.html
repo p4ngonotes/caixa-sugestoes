@@ -23,29 +23,21 @@ h1 {
   color: #facc15;
 }
 
-/* 👁️ SERAFIM */
-.serafim {
-  font-size: 32px;
-  line-height: 1.2;
-  margin-bottom: 15px;
-  animation: piscar 4s infinite;
+.icone {
+  font-size: 40px;
+  margin-bottom: 10px;
 }
 
-@keyframes piscar {
-  0%,100% {opacity:1;}
-  50% {opacity:0.6;}
-}
-
-/* 🔥 CARD */
+/* CARD */
 .card {
   background: #0f172a;
   padding: 20px;
-  border-radius: 14px;
+  border-radius: 12px;
   border: 2px solid #facc15;
-  box-shadow: 0 0 15px rgba(250,204,21,0.35);
+  box-shadow: 0 0 12px rgba(250,204,21,0.3);
 }
 
-/* 🔥 INPUTS */
+/* INPUTS */
 textarea, select {
   width: 100%;
   border-radius: 10px;
@@ -54,14 +46,13 @@ textarea, select {
   margin-top: 10px;
   background: #020617;
   color: #fefce8;
-  font-size: 14px;
 }
 
 textarea {
   height: 120px;
 }
 
-/* 🔥 BOTÃO */
+/* BOTÃO */
 button {
   margin-top: 15px;
   padding: 10px 15px;
@@ -71,14 +62,13 @@ button {
   color: black;
   font-weight: bold;
   cursor: pointer;
-  transition: 0.2s;
 }
 
 button:hover {
-  transform: scale(1.05);
   box-shadow: 0 0 10px #facc15;
 }
 
+/* MENSAGEM */
 .mensagem {
   margin-top: 10px;
   min-height: 20px;
@@ -90,11 +80,7 @@ button:hover {
 
 <div class="container">
 
-<div class="serafim">
-👁️👁️👁️<br>
-👁️ &nbsp; 👁️<br>
-👁️👁️👁️
-</div>
+<div class="icone">👁️ ⭐ 📺</div>
 
 <h1>Adherbal Vox</h1>
 <p>Envie sua sugestão de forma anônima</p>
@@ -125,19 +111,20 @@ button:hover {
 
 <script>
 
-// 🔗 SUPABASE
-const supabaseUrl = 'https://tjoormwrszetarhlfpmt.supabase.co'
-const supabaseKey = 'sb_publishable_zOCfyuybTdMRFnc__LB_Sg_puROfwrD'
-const client = window.supabase.createClient(supabaseUrl, supabaseKey)
+// conexão segura
+const client = window.supabase.createClient(
+  "https://tjoormwrszetarhlfpmt.supabase.co",
+  "sb_publishable_zOCfyuybTdMRFnc__LB_Sg_puROfwrD"
+)
 
-// 🚫 PALAVRAS PROIBIDAS
+// palavras proibidas
 const palavrasProibidas = [
   "merda","porra","caralho","foda","foder","nazismo","fuder",
   "pika","piroca","buceta","viado","gay","abusador","abusado",
   "molestado","estuprado","estupro","estuprador","nazista","epstein","cu"
 ]
 
-// 🚀 ENVIAR
+// enviar
 async function enviar() {
 
   const texto = document.getElementById("texto").value.trim()
@@ -156,9 +143,9 @@ async function enviar() {
     return
   }
 
-  // filtro correto (não pega "cuidar")
+  // filtro correto (não quebra "cuidar")
   for (let palavra of palavrasProibidas) {
-    const regex = new RegExp(`\\b${palavra}\\b`, 'i')
+    const regex = new RegExp(`\\b${palavra}\\b`, "i")
     if (regex.test(texto)) {
       msg.innerText = "Sugestão contém palavras inadequadas!"
       return
@@ -166,13 +153,13 @@ async function enviar() {
   }
 
   const { error } = await client
-    .from('sugestoes')
+    .from("sugestoes")
     .insert([{ sugestao: texto, turma: turma, status: "pendente" }])
 
   if (error) {
     msg.innerText = "Erro ao enviar 😬"
   } else {
-    msg.innerText = "Sugestão enviada! ✅"
+    msg.innerText = "Sugestão enviada com sucesso! ✅"
     document.getElementById("texto").value = ""
     document.getElementById("turma").value = ""
   }
