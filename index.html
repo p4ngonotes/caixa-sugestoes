@@ -15,26 +15,31 @@ body {
 }
 
 .container {
-  max-width: 500px;
+  max-width: 520px;
   margin: auto;
+}
+
+.topo {
+  margin-bottom: 20px;
+}
+
+.icone {
+  font-size: 38px;
+  margin-bottom: 5px;
 }
 
 h1 {
   color: #facc15;
-}
-
-.icone {
-  font-size: 40px;
-  margin-bottom: 10px;
+  margin: 5px 0;
 }
 
 /* CARD */
 .card {
   background: #0f172a;
-  padding: 20px;
-  border-radius: 12px;
+  padding: 22px;
+  border-radius: 14px;
   border: 2px solid #facc15;
-  box-shadow: 0 0 12px rgba(250,204,21,0.3);
+  box-shadow: 0 0 15px rgba(250,204,21,0.35);
 }
 
 /* INPUTS */
@@ -43,9 +48,10 @@ textarea, select {
   border-radius: 10px;
   border: 2px solid #facc15;
   padding: 10px;
-  margin-top: 10px;
+  margin-top: 12px;
   background: #020617;
   color: #fefce8;
+  font-size: 14px;
 }
 
 textarea {
@@ -55,23 +61,27 @@ textarea {
 /* BOTÃO */
 button {
   margin-top: 15px;
-  padding: 10px 15px;
+  padding: 11px;
+  width: 100%;
   border-radius: 10px;
   border: 2px solid #facc15;
   background: #facc15;
   color: black;
   font-weight: bold;
   cursor: pointer;
+  transition: 0.2s;
 }
 
 button:hover {
-  box-shadow: 0 0 10px #facc15;
+  transform: scale(1.02);
+  box-shadow: 0 0 12px #facc15;
 }
 
 /* MENSAGEM */
 .mensagem {
   margin-top: 10px;
   min-height: 20px;
+  font-size: 14px;
 }
 </style>
 </head>
@@ -80,10 +90,11 @@ button:hover {
 
 <div class="container">
 
-<div class="icone">👁️ ⭐ 📺</div>
-
-<h1>Adherbal Vox</h1>
-<p>Envie sua sugestão de forma anônima</p>
+<div class="topo">
+  <div class="icone">👁️ ⭐ 📺</div>
+  <h1>Adherbal Vox</h1>
+  <p>Envie sua sugestão de forma anônima</p>
+</div>
 
 <div class="card">
 
@@ -100,7 +111,7 @@ button:hover {
 
 <textarea id="texto" placeholder="Digite sua sugestão..."></textarea>
 
-<button onclick="enviar()">Enviar</button>
+<button onclick="enviar()">Enviar sugestão</button>
 
 <p class="mensagem" id="msg"></p>
 
@@ -111,20 +122,20 @@ button:hover {
 
 <script>
 
-// conexão segura
+// 🔗 SUPABASE
 const client = window.supabase.createClient(
   "https://tjoormwrszetarhlfpmt.supabase.co",
   "sb_publishable_zOCfyuybTdMRFnc__LB_Sg_puROfwrD"
 )
 
-// palavras proibidas
+// 🚫 PALAVRAS PROIBIDAS
 const palavrasProibidas = [
   "merda","porra","caralho","foda","foder","nazismo","fuder",
   "pika","piroca","buceta","viado","gay","abusador","abusado",
   "molestado","estuprado","estupro","estuprador","nazista","epstein","cu"
 ]
 
-// enviar
+// 🚀 ENVIAR
 async function enviar() {
 
   const texto = document.getElementById("texto").value.trim()
@@ -133,25 +144,34 @@ async function enviar() {
 
   msg.innerText = ""
 
+  // 🏫 turma obrigatória
   if (!turma) {
     msg.innerText = "Selecione sua turma!"
     return
   }
 
+  // 📏 mínimo
   if (texto.length < 5) {
-    msg.innerText = "Sugestão muito curta!"
+    msg.innerText = "Sugestão muito curta! (mínimo 5 caracteres)"
     return
   }
 
-  // filtro correto (não quebra "cuidar")
+  // 📏 máximo
+  if (texto.length > 300) {
+    msg.innerText = "Sugestão muito longa! (máximo 300 caracteres)"
+    return
+  }
+
+  // 🚫 filtro
   for (let palavra of palavrasProibidas) {
     const regex = new RegExp(`\\b${palavra}\\b`, "i")
     if (regex.test(texto)) {
-      msg.innerText = "Sugestão contém palavras inadequadas!"
+      msg.innerText = `Palavra inadequada: "${palavra}"`
       return
     }
   }
 
+  // 📤 envio
   const { error } = await client
     .from("sugestoes")
     .insert([{ sugestao: texto, turma: turma, status: "pendente" }])
@@ -159,7 +179,7 @@ async function enviar() {
   if (error) {
     msg.innerText = "Erro ao enviar 😬"
   } else {
-    msg.innerText = "Sugestão enviada com sucesso! ✅"
+    msg.innerText = "Sugestão enviada! ✅"
     document.getElementById("texto").value = ""
     document.getElementById("turma").value = ""
   }
