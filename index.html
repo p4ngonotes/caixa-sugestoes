@@ -5,18 +5,31 @@
 <title>Adherbal Vox - Sugestões</title>
 
 <style>
+
+/* 🔥 FIX PRINCIPAL */
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: Arial;
   background: linear-gradient(135deg, #000000, #020617);
   color: #fefce8;
-  text-align: center;
   margin: 0;
-  padding: 20px;
+  padding: 0;
+
+  /* 🔥 CENTRALIZAÇÃO REAL */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  text-align: center;
 }
 
 .container {
+  width: 100%;
   max-width: 520px;
-  margin: auto;
+  padding: 20px;
 }
 
 .topo {
@@ -54,8 +67,10 @@ textarea, select {
   font-size: 14px;
 }
 
+/* textarea */
 textarea {
   height: 120px;
+  resize: none;
 }
 
 /* BOTÃO */
@@ -83,6 +98,7 @@ button:hover {
   min-height: 20px;
   font-size: 14px;
 }
+
 </style>
 </head>
 
@@ -90,52 +106,50 @@ button:hover {
 
 <div class="container">
 
-<div class="topo">
-  <div class="icone">👁️ ⭐ 📺</div>
-  <h1>Adherbal Vox</h1>
-  <p>Envie sua sugestão de forma anônima</p>
-</div>
+  <div class="topo">
+    <div class="icone">👁️ ⭐ 📺</div>
+    <h1>Adherbal Vox</h1>
+    <p>Envie sua sugestão de forma anônima</p>
+  </div>
 
-<div class="card">
+  <div class="card">
 
-<select id="turma">
-  <option value="">Selecione sua turma</option>
-  <option>6A</option><option>6B</option>
-  <option>7A</option><option>7B</option>
-  <option>8A</option><option>8B</option>
-  <option>9A</option><option>9B</option><option>9C</option>
-  <option>1A</option><option>1B</option><option>1C</option>
-  <option>2A</option><option>2B</option><option>2C</option>
-  <option>3A</option><option>3B</option><option>3C</option>
-</select>
+    <select id="turma">
+      <option value="">Selecione sua turma</option>
+      <option>6A</option><option>6B</option>
+      <option>7A</option><option>7B</option>
+      <option>8A</option><option>8B</option>
+      <option>9A</option><option>9B</option><option>9C</option>
+      <option>1A</option><option>1B</option><option>1C</option>
+      <option>2A</option><option>2B</option><option>2C</option>
+      <option>3A</option><option>3B</option><option>3C</option>
+    </select>
 
-<textarea id="texto" placeholder="Digite sua sugestão..."></textarea>
+    <textarea id="texto" placeholder="Digite sua sugestão..."></textarea>
 
-<button onclick="enviar()">Enviar sugestão</button>
+    <button onclick="enviar()">Enviar sugestão</button>
 
-<p class="mensagem" id="msg"></p>
+    <p class="mensagem" id="msg"></p>
 
-</div>
+  </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script>
 
-// 🔗 SUPABASE
 const client = window.supabase.createClient(
   "https://tjoormwrszetarhlfpmt.supabase.co",
   "sb_publishable_zOCfyuybTdMRFnc__LB_Sg_puROfwrD"
 )
 
-// 🚫 PALAVRAS PROIBIDAS
 const palavrasProibidas = [
   "merda","porra","caralho","foda","foder","nazismo","fuder",
   "pika","piroca","buceta","viado","gay","abusador","abusado",
   "molestado","estuprado","estupro","estuprador","nazista","epstein","cu"
 ]
 
-// 🚀 ENVIAR
 async function enviar() {
 
   const texto = document.getElementById("texto").value.trim()
@@ -144,25 +158,21 @@ async function enviar() {
 
   msg.innerText = ""
 
-  // 🏫 turma obrigatória
   if (!turma) {
     msg.innerText = "Selecione sua turma!"
     return
   }
 
-  // 📏 mínimo
   if (texto.length < 5) {
     msg.innerText = "Sugestão muito curta! (mínimo 5 caracteres)"
     return
   }
 
-  // 📏 máximo
   if (texto.length > 300) {
     msg.innerText = "Sugestão muito longa! (máximo 300 caracteres)"
     return
   }
 
-  // 🚫 filtro
   for (let palavra of palavrasProibidas) {
     const regex = new RegExp(`\\b${palavra}\\b`, "i")
     if (regex.test(texto)) {
@@ -171,7 +181,6 @@ async function enviar() {
     }
   }
 
-  // 📤 envio
   const { error } = await client
     .from("sugestoes")
     .insert([{ sugestao: texto, turma: turma, status: "pendente" }])
