@@ -7,15 +7,15 @@
 <style>
 body {
   font-family: Arial;
-  background: linear-gradient(135deg, #000, #020617);
+  background: linear-gradient(135deg, #000000, #020617);
   color: #fefce8;
   text-align: center;
   margin: 0;
 }
 
 /* LOGIN */
-.login-box {
-  margin-top: 100px;
+.login {
+  margin-top: 120px;
 }
 
 input {
@@ -23,6 +23,7 @@ input {
   border-radius: 8px;
   border: none;
   margin: 10px;
+  width: 200px;
 }
 
 button {
@@ -58,35 +59,43 @@ button {
   background: #facc15;
   color: black;
 }
+
+h1 {
+  color: #facc15;
+}
 </style>
 </head>
 
 <body>
 
 <!-- LOGIN -->
-<div class="login-box" id="login">
+<div class="login" id="login">
   <h1>Adherbal Vox 👁️</h1>
   <p>Painel da Coordenação</p>
+
   <input type="password" id="senha" placeholder="Digite a senha">
   <br>
   <button onclick="entrar()">Entrar</button>
+
   <p id="erro" style="color:red;"></p>
 </div>
 
 <!-- PAINEL -->
 <div class="painel" id="painel">
 
-<h2>📌 Aprovadas</h2>
-<div id="lista"></div>
+  <h2>📌 Aprovadas</h2>
+  <div id="lista"></div>
 
-<h2>✔ Resolvidas</h2>
-<div id="resolvidas"></div>
+  <h2>✔ Resolvidas</h2>
+  <div id="resolvidas"></div>
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script>
+
+// 🔒 SENHA
 const senhaCorreta = "itape0607"
 
 function entrar() {
@@ -101,51 +110,77 @@ function entrar() {
   }
 }
 
-// SUPABASE
+// 🔗 SUPABASE
 const supabaseUrl = 'https://tjoormwrszetarhlfpmt.supabase.co'
 const supabaseKey = 'sb_publishable_zOCfyuybTdMRFnc__LB_Sg_puROfwrD'
+
 const client = window.supabase.createClient(supabaseUrl, supabaseKey)
 
-// CARREGAR
+// 🔄 CARREGAR
 async function carregarSugestoes() {
+
   const lista = document.getElementById("lista")
   const resolvidas = document.getElementById("resolvidas")
 
   lista.innerHTML = ""
   resolvidas.innerHTML = ""
 
-  const { data: aprovadas } = await client.from('sugestoes').select('*').eq('status','aprovado')
-  const { data: feitas } = await client.from('sugestoes').select('*').eq('status','resolvido')
+  const { data: aprovadas } = await client
+    .from('sugestoes')
+    .select('*')
+    .eq('status', 'aprovado')
 
-  aprovadas.forEach(s => {
-    lista.innerHTML += `
-      <div class="card">
-        <p>${s.sugestao}</p>
-        <button class="resolver" onclick="resolver(${s.id})">✔ Resolver</button>
-      </div>
-    `
-  })
+  const { data: feitas } = await client
+    .from('sugestoes')
+    .select('*')
+    .eq('status', 'resolvido')
 
-  feitas.forEach(s => {
-    resolvidas.innerHTML += `
-      <div class="card">
-        <p>${s.sugestao}</p>
-        <button class="ocultar" onclick="ocultar(${s.id})">👁️ Ocultar</button>
-      </div>
-    `
-  })
+  // APROVADAS
+  if (aprovadas) {
+    aprovadas.forEach(s => {
+      lista.innerHTML += `
+        <div class="card">
+          <p><strong>${s.sugestao}</strong></p>
+          <button class="resolver" onclick="resolver(${s.id})">✔ Resolver</button>
+        </div>
+      `
+    })
+  }
+
+  // RESOLVIDAS
+  if (feitas) {
+    feitas.forEach(s => {
+      resolvidas.innerHTML += `
+        <div class="card">
+          <p>${s.sugestao}</p>
+          <button class="ocultar" onclick="ocultar(${s.id})">👁️ Ocultar</button>
+        </div>
+      `
+    })
+  }
+
 }
 
-// AÇÕES
-async function resolver(id){
-  await client.from('sugestoes').update({status:'resolvido'}).match({id})
+// ✔ RESOLVER
+async function resolver(id) {
+  await client
+    .from('sugestoes')
+    .update({ status: 'resolvido' })
+    .match({ id: id })
+
   carregarSugestoes()
 }
 
-async function ocultar(id){
-  await client.from('sugestoes').update({status:'oculto'}).match({id})
+// 👁️ OCULTAR
+async function ocultar(id) {
+  await client
+    .from('sugestoes')
+    .update({ status: 'oculto' })
+    .match({ id: id })
+
   carregarSugestoes()
 }
+
 </script>
 
 </body>
