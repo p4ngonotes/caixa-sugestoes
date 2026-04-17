@@ -6,7 +6,7 @@
 
 <style>
 
-/* 🔥 FIX PRINCIPAL */
+/* 🔥 FIX GLOBAL */
 * {
   box-sizing: border-box;
 }
@@ -18,7 +18,7 @@ body {
   margin: 0;
   padding: 0;
 
-  /* 🔥 CENTRALIZAÇÃO REAL */
+  /* CENTRALIZAÇÃO REAL */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -32,6 +32,7 @@ body {
   padding: 20px;
 }
 
+/* TOPO */
 .topo {
   margin-bottom: 20px;
 }
@@ -139,17 +140,20 @@ button:hover {
 
 <script>
 
+// 🔗 SUPABASE
 const client = window.supabase.createClient(
   "https://tjoormwrszetarhlfpmt.supabase.co",
   "sb_publishable_zOCfyuybTdMRFnc__LB_Sg_puROfwrD"
 )
 
+// 🚫 PALAVRAS PROIBIDAS
 const palavrasProibidas = [
   "merda","porra","caralho","foda","foder","nazismo","fuder",
   "pika","piroca","buceta","viado","gay","abusador","abusado",
   "molestado","estuprado","estupro","estuprador","nazista","epstein","cu"
 ]
 
+// 🚀 ENVIAR
 async function enviar() {
 
   const texto = document.getElementById("texto").value.trim()
