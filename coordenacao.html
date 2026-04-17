@@ -135,8 +135,8 @@ async function carregarSugestoes() {
     .select('*')
     .eq('status', 'resolvido')
 
-  // APROVADAS
-  if (aprovadas) {
+  // 📌 APROVADAS
+  if (aprovadas && aprovadas.length > 0) {
     aprovadas.forEach(s => {
       lista.innerHTML += `
         <div class="card">
@@ -145,10 +145,12 @@ async function carregarSugestoes() {
         </div>
       `
     })
+  } else {
+    lista.innerHTML = "<p>Nada pendente 👀</p>"
   }
 
-  // RESOLVIDAS
-  if (feitas) {
+  // ✔ RESOLVIDAS
+  if (feitas && feitas.length > 0) {
     feitas.forEach(s => {
       resolvidas.innerHTML += `
         <div class="card">
@@ -157,6 +159,8 @@ async function carregarSugestoes() {
         </div>
       `
     })
+  } else {
+    resolvidas.innerHTML = "<p>Todas já foram ocultadas ✅</p>"
   }
 
 }
