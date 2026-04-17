@@ -14,13 +14,14 @@
       padding: 20px;
     }
 
-    h1 {
-      color: #a5b4fc;
-    }
-
     .logo img {
       width: 60px;
       margin-bottom: 10px;
+    }
+
+    h1 {
+      color: #a5b4fc;
+      margin: 0;
     }
 
     .container {
@@ -62,11 +63,13 @@
 </div>
 
 <div class="container">
+
   <h2>📌 Sugestões Aprovadas</h2>
   <div id="lista"></div>
 
   <h2>✔ Resolvidas</h2>
   <div id="resolvidas"></div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
@@ -90,6 +93,7 @@ const client = window.supabase.createClient(supabaseUrl, supabaseKey)
 
 // 🔄 CARREGAR
 async function carregarSugestoes() {
+
   const lista = document.getElementById("lista")
   const resolvidas = document.getElementById("resolvidas")
 
@@ -108,8 +112,10 @@ async function carregarSugestoes() {
     .select('*')
     .eq('status', 'resolvido')
 
+  // MOSTRAR APROVADAS
   if (aprovadas && aprovadas.length > 0) {
     aprovadas.forEach(s => {
+
       const div = document.createElement("div")
       div.className = "card"
 
@@ -120,13 +126,16 @@ async function carregarSugestoes() {
       `
 
       lista.appendChild(div)
+
     })
   } else {
     lista.innerHTML = "<p>Nada novo 👀</p>"
   }
 
+  // MOSTRAR RESOLVIDAS
   if (feitas && feitas.length > 0) {
     feitas.forEach(s => {
+
       const div = document.createElement("div")
       div.className = "card"
 
@@ -136,20 +145,24 @@ async function carregarSugestoes() {
       `
 
       resolvidas.appendChild(div)
+
     })
   } else {
     resolvidas.innerHTML = "<p>Nenhuma resolvida ainda.</p>"
   }
+
 }
 
-// ✔ MARCAR COMO RESOLVIDO
+// ✔ RESOLVER
 async function resolver(id) {
+
   await client
     .from('sugestoes')
     .update({ status: 'resolvido' })
     .match({ id: id })
 
   carregarSugestoes()
+
 }
 
 // 🚀 INICIAR
