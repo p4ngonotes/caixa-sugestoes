@@ -1,147 +1,162 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Adherbal Vox</title>
+<meta charset="UTF-8">
+<title>Adherbal Vox - Sugestões</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: white;
-      text-align: center;
-      margin: 0;
-      padding: 20px;
-    }
+<style>
+body {
+  font-family: Arial;
+  background: linear-gradient(135deg, #000000, #020617);
+  color: #fefce8;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+}
 
-    .logo img {
-      width: 80px;
-      margin-bottom: 10px;
-    }
+.container {
+  max-width: 500px;
+  margin: auto;
+}
 
-    .logo h1 {
-      margin: 0;
-      color: #a5b4fc;
-    }
+h1 {
+  color: #facc15;
+}
 
-    .container {
-      background: #1e293b;
-      padding: 20px;
-      border-radius: 12px;
-      max-width: 400px;
-      margin: 20px auto;
-    }
+.card {
+  background: #0f172a;
+  padding: 20px;
+  border-radius: 12px;
+  border-left: 4px solid #facc15;
+  box-shadow: 0 0 10px rgba(250,204,21,0.2);
+}
 
-    input, textarea {
-      width: 90%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 8px;
-      border: none;
-    }
+textarea {
+  width: 100%;
+  height: 120px;
+  border-radius: 10px;
+  border: none;
+  padding: 10px;
+  margin-top: 10px;
+}
 
-    textarea {
-      height: 100px;
-    }
+select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  margin-top: 10px;
+}
 
-    button {
-      padding: 12px;
-      width: 95%;
-      border: none;
-      border-radius: 10px;
-      background: #6366f1;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
+button {
+  margin-top: 15px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 10px;
+  background: #facc15;
+  font-weight: bold;
+  cursor: pointer;
+}
 
-    .sucesso {
-      margin-top: 10px;
-      color: #22c55e;
-    }
-  </style>
+.icone {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.mensagem {
+  margin-top: 10px;
+}
+</style>
 </head>
 
 <body>
 
-<div class="logo">
-  <img src="https://cdn-icons-png.flaticon.com/512/616/616490.png">
-  <h1>Adherbal Vox</h1>
-  <p>Sua voz na escola</p>
-</div>
-
 <div class="container">
-  <h2>Envie sua sugestão</h2>
 
-  <input type="text" id="turma" placeholder="Turma (opcional)">
-  <textarea id="sugestao" placeholder="Escreva sua sugestão..."></textarea>
+<div class="icone">👼</div>
 
-  <button onclick="enviar()">Enviar</button>
+<h1>Adherbal Vox</h1>
+<p>Envie sua sugestão de forma anônima</p>
 
-  <div class="sucesso" id="msg"></div>
+<div class="card">
+
+<select id="turma" required>
+  <option value="">Selecione sua turma</option>
+  <option>6A</option><option>6B</option>
+  <option>7A</option><option>7B</option>
+  <option>8A</option><option>8B</option>
+  <option>9A</option><option>9B</option><option>9C</option>
+  <option>1A</option><option>1B</option><option>1C</option>
+  <option>2A</option><option>2B</option><option>2C</option>
+  <option>3A</option><option>3B</option><option>3C</option>
+</select>
+
+<textarea id="texto" placeholder="Digite sua sugestão..."></textarea>
+
+<button onclick="enviar()">Enviar</button>
+
+<p class="mensagem" id="msg"></p>
+
+</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script>
+
+// SUPABASE
 const supabaseUrl = 'https://tjoormwrszetarhlfpmt.supabase.co'
 const supabaseKey = 'sb_publishable_zOCfyuybTdMRFnc__LB_Sg_puROfwrD'
-
 const client = window.supabase.createClient(supabaseUrl, supabaseKey)
 
+// FILTRO
+const palavrasProibidas = [
+  "merda","porra","caralho","foda","foder","nazismo","fuder",
+  "pika","piroca","buceta","viado","gay","abusador","abusado",
+  "molestado","estuprado","estupro","estuprador","nazista","epstein","cu"
+]
+
+// FUNÇÃO
 async function enviar() {
-  let sugestao = document.getElementById("sugestao").value
-  let turma = document.getElementById("turma").value
 
-  // 🔒 NÃO PERMITE VAZIO
-  if (sugestao.trim() === "") {
-    alert("Digite uma sugestão válida!")
+  const texto = document.getElementById("texto").value.trim()
+  const turma = document.getElementById("turma").value
+  const msg = document.getElementById("msg")
+
+  // validações
+  if (!turma) {
+    msg.innerText = "Selecione sua turma!"
     return
   }
 
-  // 🔒 MÍNIMO
-  if (sugestao.length < 10) {
-    alert("A sugestão precisa ter pelo menos 10 caracteres!")
+  if (texto.length < 5) {
+    msg.innerText = "Sugestão muito curta!"
     return
   }
 
-  // 🔒 MÁXIMO
-  if (sugestao.length > 300) {
-    alert("Máximo de 300 caracteres!")
-    return
-  }
-
-  // 🔒 PALAVRAS PROIBIDAS
-  const proibidas = [
-    "merda","porra","caralho","foda","foder","nazismo","fuder",
-    "pika","piroca","buceta","viado","gay","abusador","abusado",
-    "molestado","estuprado","estupro","estuprador","nazista",
-    "epstein","cu"
-  ]
-
-  let texto = sugestao.toLowerCase()
-
-  for (let palavra of proibidas) {
-    if (texto.includes(palavra)) {
-      alert("Sua sugestão contém palavras inadequadas!")
+  // filtro inteligente
+  for (let palavra of palavrasProibidas) {
+    const regex = new RegExp(`\\b${palavra}\\b`, 'i')
+    if (regex.test(texto)) {
+      msg.innerText = "Sugestão contém palavras inadequadas!"
       return
     }
   }
 
-  // 🚀 ENVIO
-  await client.from('sugestoes').insert([
-    {
-      sugestao: sugestao,
-      turma: turma,
-      status: "pendente"
-    }
-  ])
+  // enviar
+  const { error } = await client
+    .from('sugestoes')
+    .insert([{ sugestao: texto, turma: turma, status: "pendente" }])
 
-  document.getElementById("msg").innerText = "Enviado com sucesso! ✅"
-
-  document.getElementById("sugestao").value = ""
-  document.getElementById("turma").value = ""
+  if (error) {
+    msg.innerText = "Erro ao enviar 😬"
+  } else {
+    msg.innerText = "Sugestão enviada com sucesso!"
+    document.getElementById("texto").value = ""
+    document.getElementById("turma").value = ""
+  }
 }
+
 </script>
 
 </body>
