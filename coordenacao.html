@@ -39,6 +39,17 @@
       font-size: 12px;
       color: #94a3b8;
     }
+
+    button {
+      margin-top: 10px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 8px;
+      background: #22c55e;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -50,7 +61,13 @@
   <p>Painel da Coordenação</p>
 </div>
 
-<div class="container" id="lista"></div>
+<div class="container">
+  <h2>📌 Sugestões Aprovadas</h2>
+  <div id="lista"></div>
+
+  <h2>✔ Resolvidas</h2>
+  <div id="resolvidas"></div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
@@ -71,34 +88,71 @@ const supabaseKey = 'sb_publishable_zOCfyuybTdMRFnc__LB_Sg_puROfwrD'
 
 const client = window.supabase.createClient(supabaseUrl, supabaseKey)
 
-// 🔄 CARREGAR APROVADAS
+// 🔄 CARREGAR
 async function carregarSugestoes() {
-  const { data } = await client
+  const lista = document.getElementById("lista")
+  const resolvidas = document.getElementById("resolvidas")
+
+  lista.innerHTML = ""
+  resolvidas.innerHTML = ""
+
+  // APROVADAS
+  const { data: aprovadas } = await client
     .from('sugestoes')
     .select('*')
     .eq('status', 'aprovado')
 
-  const lista = document.getElementById("lista")
-  lista.innerHTML = ""
+  // RESOLVIDAS
+  const { data: feitas } = await client
+    .from('sugestoes')
+    .select('*')
+    .eq('status', 'resolvido')
 
-  if (!data || data.length === 0) {
-    lista.innerHTML = "<p>Nenhuma sugestão aprovada ainda.</p>"
-    return
+  if (aprovadas && aprovadas.length > 0) {
+    aprovadas.forEach(s => {
+      const div = document.createElement("div")
+      div.className = "card"
+
+      div.innerHTML = `
+        <p><strong>${s.sugestao}</strong></p>
+        <p class="turma">Turma: ${s.turma || "Não informado"}</p>
+        <button onclick="resolver(${s.id})">✔ Resolver</button>
+      `
+
+      lista.appendChild(div)
+    })
+  } else {
+    lista.innerHTML = "<p>Nada novo 👀</p>"
   }
 
-  data.forEach(s => {
-    const div = document.createElement("div")
-    div.className = "card"
+  if (feitas && feitas.length > 0) {
+    feitas.forEach(s => {
+      const div = document.createElement("div")
+      div.className = "card"
 
-    div.innerHTML = `
-      <p><strong>${s.sugestao}</strong></p>
-      <p class="turma">Turma: ${s.turma || "Não informado"}</p>
-    `
+      div.innerHTML = `
+        <p>${s.sugestao}</p>
+        <p class="turma">${s.turma || ""}</p>
+      `
 
-    lista.appendChild(div)
-  })
+      resolvidas.appendChild(div)
+    })
+  } else {
+    resolvidas.innerHTML = "<p>Nenhuma resolvida ainda.</p>"
+  }
 }
 
+// ✔ MARCAR COMO RESOLVIDO
+async function resolver(id) {
+  await client
+    .from('sugestoes')
+    .update({ status: 'resolvido' })
+    .match({ id: id })
+
+  carregarSugestoes()
+}
+
+// 🚀 INICIAR
 carregarSugestoes()
 
 </script>
