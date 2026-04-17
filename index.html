@@ -1,3 +1,9 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Adherbal Vox - Sugestões</title>
+
 <style>
 body {
   font-family: Arial;
@@ -17,7 +23,20 @@ h1 {
   color: #facc15;
 }
 
-/* 🔥 CARDS MAIS MARCANTES */
+/* 👁️ SERAFIM */
+.serafim {
+  font-size: 32px;
+  line-height: 1.2;
+  margin-bottom: 15px;
+  animation: piscar 4s infinite;
+}
+
+@keyframes piscar {
+  0%,100% {opacity:1;}
+  50% {opacity:0.6;}
+}
+
+/* 🔥 CARD */
 .card {
   background: #0f172a;
   padding: 20px;
@@ -26,7 +45,7 @@ h1 {
   box-shadow: 0 0 15px rgba(250,204,21,0.35);
 }
 
-/* 🔥 CAMPOS MAIS VISÍVEIS */
+/* 🔥 INPUTS */
 textarea, select {
   width: 100%;
   border-radius: 10px;
@@ -35,13 +54,14 @@ textarea, select {
   margin-top: 10px;
   background: #020617;
   color: #fefce8;
+  font-size: 14px;
 }
 
 textarea {
   height: 120px;
 }
 
-/* 🔥 BOTÃO MAIS VIVO */
+/* 🔥 BOTÃO */
 button {
   margin-top: 15px;
   padding: 10px 15px;
@@ -59,20 +79,106 @@ button:hover {
   box-shadow: 0 0 10px #facc15;
 }
 
-/* 👁️ SERAFIM */
-.serafim {
-  font-size: 42px;
-  margin-bottom: 10px;
-  letter-spacing: 5px;
-  animation: brilho 3s infinite;
-}
-
-@keyframes brilho {
-  0%,100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
-
 .mensagem {
   margin-top: 10px;
+  min-height: 20px;
 }
 </style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="serafim">
+👁️👁️👁️<br>
+👁️ &nbsp; 👁️<br>
+👁️👁️👁️
+</div>
+
+<h1>Adherbal Vox</h1>
+<p>Envie sua sugestão de forma anônima</p>
+
+<div class="card">
+
+<select id="turma">
+  <option value="">Selecione sua turma</option>
+  <option>6A</option><option>6B</option>
+  <option>7A</option><option>7B</option>
+  <option>8A</option><option>8B</option>
+  <option>9A</option><option>9B</option><option>9C</option>
+  <option>1A</option><option>1B</option><option>1C</option>
+  <option>2A</option><option>2B</option><option>2C</option>
+  <option>3A</option><option>3B</option><option>3C</option>
+</select>
+
+<textarea id="texto" placeholder="Digite sua sugestão..."></textarea>
+
+<button onclick="enviar()">Enviar</button>
+
+<p class="mensagem" id="msg"></p>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<script>
+
+// 🔗 SUPABASE
+const supabaseUrl = 'https://tjoormwrszetarhlfpmt.supabase.co'
+const supabaseKey = 'sb_publishable_zOCfyuybTdMRFnc__LB_Sg_puROfwrD'
+const client = window.supabase.createClient(supabaseUrl, supabaseKey)
+
+// 🚫 PALAVRAS PROIBIDAS
+const palavrasProibidas = [
+  "merda","porra","caralho","foda","foder","nazismo","fuder",
+  "pika","piroca","buceta","viado","gay","abusador","abusado",
+  "molestado","estuprado","estupro","estuprador","nazista","epstein","cu"
+]
+
+// 🚀 ENVIAR
+async function enviar() {
+
+  const texto = document.getElementById("texto").value.trim()
+  const turma = document.getElementById("turma").value
+  const msg = document.getElementById("msg")
+
+  msg.innerText = ""
+
+  if (!turma) {
+    msg.innerText = "Selecione sua turma!"
+    return
+  }
+
+  if (texto.length < 5) {
+    msg.innerText = "Sugestão muito curta!"
+    return
+  }
+
+  // filtro correto (não pega "cuidar")
+  for (let palavra of palavrasProibidas) {
+    const regex = new RegExp(`\\b${palavra}\\b`, 'i')
+    if (regex.test(texto)) {
+      msg.innerText = "Sugestão contém palavras inadequadas!"
+      return
+    }
+  }
+
+  const { error } = await client
+    .from('sugestoes')
+    .insert([{ sugestao: texto, turma: turma, status: "pendente" }])
+
+  if (error) {
+    msg.innerText = "Erro ao enviar 😬"
+  } else {
+    msg.innerText = "Sugestão enviada! ✅"
+    document.getElementById("texto").value = ""
+    document.getElementById("turma").value = ""
+  }
+}
+
+</script>
+
+</body>
+</html>
