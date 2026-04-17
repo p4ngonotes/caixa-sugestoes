@@ -21,18 +21,30 @@ body {
 input {
   padding: 10px;
   border-radius: 8px;
-  border: none;
+  border: 1px solid #334155;
   margin: 10px;
   width: 200px;
+  background: #0f172a;
+  color: #fefce8;
+  outline: none;
+}
+
+input:focus {
+  border: 1px solid #facc15;
 }
 
 button {
   padding: 10px 15px;
   border-radius: 8px;
-  border: none;
+  border: 1px solid transparent;
   background: #facc15;
   font-weight: bold;
   cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  transform: scale(1.03);
 }
 
 /* PAINEL */
@@ -41,26 +53,46 @@ button {
   padding: 20px;
 }
 
+h1 {
+  color: #facc15;
+}
+
+/* CARD MELHORADO (BORDAS CONTORNADAS) */
 .card {
   background: #0f172a;
   padding: 15px;
   margin: 15px auto;
   border-radius: 12px;
   max-width: 600px;
-  border-left: 4px solid #facc15;
+
+  /* 🔥 BORDA CONTORNADA (NOVA) */
+  border: 1px solid rgba(250, 204, 21, 0.25);
+
+  /* sombra suave pra dar profundidade */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+
+  transition: 0.2s;
 }
 
+.card:hover {
+  border: 1px solid rgba(250, 204, 21, 0.6);
+  transform: translateY(-2px);
+}
+
+/* BOTÕES */
 .resolver {
   background: #22c55e;
   color: black;
+  border: 1px solid #16a34a;
 }
 
 .ocultar {
   background: #facc15;
   color: black;
+  border: 1px solid #ca8a04;
 }
 
-h1 {
+h2 {
   color: #facc15;
 }
 </style>
@@ -95,7 +127,6 @@ h1 {
 
 <script>
 
-// 🔒 SENHA
 const senhaCorreta = "itape0607"
 
 function entrar() {
@@ -110,13 +141,11 @@ function entrar() {
   }
 }
 
-// 🔗 SUPABASE
 const supabaseUrl = 'https://tjoormwrszetarhlfpmt.supabase.co'
 const supabaseKey = 'sb_publishable_zOCfyuybTdMRFnc__LB_Sg_puROfwrD'
 
 const client = window.supabase.createClient(supabaseUrl, supabaseKey)
 
-// 🔄 CARREGAR
 async function carregarSugestoes() {
 
   const lista = document.getElementById("lista")
@@ -140,7 +169,6 @@ async function carregarSugestoes() {
     return
   }
 
-  // 📌 APROVADAS
   if (aprovadas && aprovadas.length > 0) {
     aprovadas.forEach(s => {
       lista.innerHTML += `
@@ -154,7 +182,6 @@ async function carregarSugestoes() {
     lista.innerHTML = "<p>Nada pendente 👀</p>"
   }
 
-  // ✔ RESOLVIDAS
   if (feitas && feitas.length > 0) {
     feitas.forEach(s => {
       resolvidas.innerHTML += `
@@ -167,10 +194,8 @@ async function carregarSugestoes() {
   } else {
     resolvidas.innerHTML = "<p>Todas já foram ocultadas ✅</p>"
   }
-
 }
 
-// ✔ RESOLVER
 async function resolver(id) {
   await client
     .from('sugestoes')
@@ -180,7 +205,6 @@ async function resolver(id) {
   carregarSugestoes()
 }
 
-// 👁️ OCULTAR
 async function ocultar(id) {
   await client
     .from('sugestoes')
