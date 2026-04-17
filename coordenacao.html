@@ -1,211 +1,151 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Adherbal Vox - Coordenação</title>
+<meta charset="UTF-8">
+<title>Adherbal Vox - Coordenação</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #000000, #020617);
-      color: #fefce8;
-      text-align: center;
-      margin: 0;
-      padding: 20px;
-    }
+<style>
+body {
+  font-family: Arial;
+  background: linear-gradient(135deg, #000, #020617);
+  color: #fefce8;
+  text-align: center;
+  margin: 0;
+}
 
-    .logo {
-      margin-bottom: 20px;
-    }
+/* LOGIN */
+.login-box {
+  margin-top: 100px;
+}
 
-    .olho {
-      font-size: 42px;
-      margin-bottom: 10px;
-      animation: piscar 4s infinite;
-    }
+input {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  margin: 10px;
+}
 
-    @keyframes piscar {
-      0%, 95%, 100% { opacity: 1; }
-      97% { opacity: 0; }
-    }
+button {
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: none;
+  background: #facc15;
+  font-weight: bold;
+  cursor: pointer;
+}
 
-    h1 {
-      color: #facc15;
-      margin: 0;
-      letter-spacing: 1px;
-    }
+/* PAINEL */
+.painel {
+  display: none;
+  padding: 20px;
+}
 
-    h2 {
-      color: #fde68a;
-      margin-top: 30px;
-    }
+.card {
+  background: #0f172a;
+  padding: 15px;
+  margin: 15px auto;
+  border-radius: 12px;
+  max-width: 600px;
+  border-left: 4px solid #facc15;
+}
 
-    .container {
-      max-width: 600px;
-      margin: auto;
-    }
+.resolver {
+  background: #22c55e;
+  color: black;
+}
 
-    .card {
-      background: #0f172a;
-      padding: 15px;
-      margin: 15px 0;
-      border-radius: 12px;
-      border-left: 4px solid #facc15;
-      box-shadow: 0 0 12px rgba(250,204,21,0.25);
-    }
-
-    .turma {
-      font-size: 12px;
-      color: #cbd5f5;
-    }
-
-    button {
-      margin: 6px;
-      padding: 8px 12px;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    button:hover {
-      transform: scale(1.05);
-    }
-
-    .resolver {
-      background: #22c55e;
-      color: black;
-    }
-
-    .ocultar {
-      background: #facc15;
-      color: black;
-    }
-  </style>
+.ocultar {
+  background: #facc15;
+  color: black;
+}
+</style>
 </head>
 
 <body>
 
-<div class="logo">
-  <div class="olho">👁️</div>
-  <h1>Adherbal Vox</h1>
+<!-- LOGIN -->
+<div class="login-box" id="login">
+  <h1>Adherbal Vox 👁️</h1>
   <p>Painel da Coordenação</p>
+  <input type="password" id="senha" placeholder="Digite a senha">
+  <br>
+  <button onclick="entrar()">Entrar</button>
+  <p id="erro" style="color:red;"></p>
 </div>
 
-<div class="container">
+<!-- PAINEL -->
+<div class="painel" id="painel">
 
-  <h2>📌 Sugestões Aprovadas</h2>
-  <div id="lista"></div>
+<h2>📌 Aprovadas</h2>
+<div id="lista"></div>
 
-  <h2>✔ Resolvidas</h2>
-  <div id="resolvidas"></div>
+<h2>✔ Resolvidas</h2>
+<div id="resolvidas"></div>
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script>
-
-// 🔒 SENHA
 const senhaCorreta = "itape0607"
-const senha = prompt("Senha da coordenação:")
 
-if (senha !== senhaCorreta) {
-  document.body.innerHTML = "<h1>Acesso negado</h1>"
-  throw new Error("bloqueado")
+function entrar() {
+  const senha = document.getElementById("senha").value
+
+  if (senha === senhaCorreta) {
+    document.getElementById("login").style.display = "none"
+    document.getElementById("painel").style.display = "block"
+    carregarSugestoes()
+  } else {
+    document.getElementById("erro").innerText = "Senha incorreta!"
+  }
 }
 
-// 🔗 CONEXÃO
+// SUPABASE
 const supabaseUrl = 'https://tjoormwrszetarhlfpmt.supabase.co'
 const supabaseKey = 'sb_publishable_zOCfyuybTdMRFnc__LB_Sg_puROfwrD'
-
 const client = window.supabase.createClient(supabaseUrl, supabaseKey)
 
-// 🔄 CARREGAR
+// CARREGAR
 async function carregarSugestoes() {
-
   const lista = document.getElementById("lista")
   const resolvidas = document.getElementById("resolvidas")
 
   lista.innerHTML = ""
   resolvidas.innerHTML = ""
 
-  const { data: aprovadas } = await client
-    .from('sugestoes')
-    .select('*')
-    .eq('status', 'aprovado')
+  const { data: aprovadas } = await client.from('sugestoes').select('*').eq('status','aprovado')
+  const { data: feitas } = await client.from('sugestoes').select('*').eq('status','resolvido')
 
-  const { data: feitas } = await client
-    .from('sugestoes')
-    .select('*')
-    .eq('status', 'resolvido')
-
-  // 🔵 APROVADAS
-  if (aprovadas && aprovadas.length > 0) {
-    aprovadas.forEach(s => {
-
-      const div = document.createElement("div")
-      div.className = "card"
-
-      div.innerHTML = `
-        <p><strong>${s.sugestao}</strong></p>
-        <p class="turma">Turma: ${s.turma || "Não informado"}</p>
-
-        <button class="resolver" onclick="resolver(${s.id})">✔ Resolver</button>
-      `
-
-      lista.appendChild(div)
-    })
-  } else {
-    lista.innerHTML = "<p>Nada novo 👀</p>"
-  }
-
-  // 🟢 RESOLVIDAS
-  if (feitas && feitas.length > 0) {
-    feitas.forEach(s => {
-
-      const div = document.createElement("div")
-      div.className = "card"
-
-      div.innerHTML = `
+  aprovadas.forEach(s => {
+    lista.innerHTML += `
+      <div class="card">
         <p>${s.sugestao}</p>
-        <p class="turma">${s.turma || ""}</p>
+        <button class="resolver" onclick="resolver(${s.id})">✔ Resolver</button>
+      </div>
+    `
+  })
 
-        <button class="ocultar" onclick="ocultar(${s.id})">👁️ Parar de exibir</button>
-      `
-
-      resolvidas.appendChild(div)
-    })
-  } else {
-    resolvidas.innerHTML = "<p>Nenhuma resolvida ainda.</p>"
-  }
-
+  feitas.forEach(s => {
+    resolvidas.innerHTML += `
+      <div class="card">
+        <p>${s.sugestao}</p>
+        <button class="ocultar" onclick="ocultar(${s.id})">👁️ Ocultar</button>
+      </div>
+    `
+  })
 }
 
-// ✔ RESOLVER
-async function resolver(id) {
-  await client
-    .from('sugestoes')
-    .update({ status: 'resolvido' })
-    .match({ id: id })
-
+// AÇÕES
+async function resolver(id){
+  await client.from('sugestoes').update({status:'resolvido'}).match({id})
   carregarSugestoes()
 }
 
-// 👁️ OCULTAR
-async function ocultar(id) {
-  await client
-    .from('sugestoes')
-    .update({ status: 'oculto' })
-    .match({ id: id })
-
+async function ocultar(id){
+  await client.from('sugestoes').update({status:'oculto'}).match({id})
   carregarSugestoes()
 }
-
-// 🚀 START
-carregarSugestoes()
-
 </script>
 
 </body>
