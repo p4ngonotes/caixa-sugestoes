@@ -1,91 +1,171 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Painel Admin</title>
+<meta charset="UTF-8">
+<title>Painel Admin</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #020617;
-      color: white;
-      text-align: center;
-      margin: 0;
-      padding: 20px;
-    }
+<style>
+body {
+  font-family: Arial;
+  background: linear-gradient(135deg, #000000, #020617);
+  color: #fefce8;
+  text-align: center;
+  margin: 0;
+}
 
-    .topo img {
-      width: 70px;
-      margin-bottom: 10px;
-    }
+/* LOGIN */
+.login {
+  margin-top: 120px;
+}
 
-    .topo h1 {
-      color: #facc15;
-      margin: 0;
-    }
+input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  margin: 10px;
+  width: 220px;
+  background: #0f172a;
+  color: #fefce8;
+  outline: none;
+}
 
-    .container {
-      max-width: 600px;
-      margin: auto;
-    }
+input:focus {
+  border: 1px solid #facc15;
+}
 
-    .card {
-      background: #0f172a;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 10px;
-    }
+button {
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: none;
+  background: #facc15;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
 
-    button {
-      padding: 8px 12px;
-      margin: 5px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-    }
+button:hover {
+  transform: scale(1.03);
+}
 
-    .aprovar {
-      background: #22c55e;
-      color: black;
-    }
+/* TOPO */
+.topo {
+  display: none;
+  margin-top: 20px;
+}
 
-    .rejeitar {
-      background: #ef4444;
-      color: white;
-    }
-  </style>
+.topo img {
+  width: 70px;
+  margin-bottom: 10px;
+}
+
+.topo h1 {
+  color: #facc15;
+  margin: 0;
+}
+
+/* CONTAINER */
+.container {
+  max-width: 600px;
+  margin: auto;
+  display: none;
+}
+
+/* CARD */
+.card {
+  background: #0f172a;
+  padding: 15px;
+  margin: 15px auto;
+  border-radius: 12px;
+  max-width: 600px;
+
+  border: 1px solid rgba(250, 204, 21, 0.25);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+
+  transition: 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border: 1px solid rgba(250, 204, 21, 0.6);
+}
+
+/* BOTÕES */
+.aprovar {
+  background: #22c55e;
+  color: black;
+  border: 1px solid #16a34a;
+}
+
+.rejeitar {
+  background: #ef4444;
+  color: white;
+  border: 1px solid #b91c1c;
+}
+</style>
 </head>
 
 <body>
 
-<div class="topo">
+<!-- LOGIN BONITO -->
+<div class="login" id="login">
+  <h1>Painel Admin 👁️</h1>
+  <p>Digite a senha para continuar</p>
+
+  <input type="password" id="senha" placeholder="Senha do admin">
+  <br>
+  <button onclick="entrar()">Entrar</button>
+
+  <p id="erro" style="color:red;"></p>
+</div>
+
+<!-- TOPO -->
+<div class="topo" id="topo">
   <img src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png">
   <h1>Painel Admin 👁️</h1>
 </div>
 
+<!-- CONTAINER -->
 <div class="container" id="lista"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script>
 
-// 🔒 SENHA
 const senhaCorreta = "axolote0607"
-const senha = prompt("Senha do admin:")
 
-if (senha !== senhaCorreta) {
-  document.body.innerHTML = "<h1>Acesso negado</h1>"
-  throw new Error("bloqueado")
+// 🔥 LOGIN (1x só)
+function entrar() {
+  const senha = document.getElementById("senha").value
+
+  if (senha === senhaCorreta) {
+    sessionStorage.setItem("adminLogado", "true")
+    iniciarPainel()
+  } else {
+    document.getElementById("erro").innerText = "Senha incorreta!"
+  }
 }
 
-// 🔗 CONEXÃO
+// 🔥 VERIFICA SE JÁ ESTÁ LOGADO
+function verificarLogin() {
+  if (sessionStorage.getItem("adminLogado") === "true") {
+    iniciarPainel()
+  }
+}
+
+function iniciarPainel() {
+  document.getElementById("login").style.display = "none"
+  document.getElementById("topo").style.display = "block"
+  document.getElementById("lista").style.display = "block"
+  carregarSugestoes()
+}
+
+// 🔗 SUPABASE
 const supabaseUrl = 'https://tjoormwrszetarhlfpmt.supabase.co'
 const supabaseKey = 'sb_publishable_zOCfyuybTdMRFnc__LB_Sg_puROfwrD'
 
 const client = window.supabase.createClient(supabaseUrl, supabaseKey)
 
-// 🔄 CARREGAR PENDENTES
+// 🔄 CARREGAR
 async function carregarSugestoes() {
   const { data } = await client
     .from('sugestoes')
@@ -122,7 +202,7 @@ async function aprovar(id) {
     .update({ status: 'aprovado' })
     .match({ id: id })
 
-  location.reload()
+  carregarSugestoes()
 }
 
 // ❌ REJEITAR
@@ -131,10 +211,11 @@ async function rejeitar(id) {
     .update({ status: 'rejeitado' })
     .match({ id: id })
 
-  location.reload()
+  carregarSugestoes()
 }
 
-carregarSugestoes()
+// 🚀 INICIA
+verificarLogin()
 
 </script>
 
