@@ -7,16 +7,26 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #020617;
+      background: linear-gradient(135deg, #020617, #09090b);
       color: white;
       text-align: center;
       margin: 0;
       padding: 20px;
     }
 
-    .logo img {
-      width: 60px;
+    .logo {
+      margin-bottom: 20px;
+    }
+
+    .olho {
+      font-size: 40px;
       margin-bottom: 10px;
+      animation: piscar 4s infinite;
+    }
+
+    @keyframes piscar {
+      0%, 95%, 100% { opacity: 1; }
+      97% { opacity: 0; }
     }
 
     h1 {
@@ -33,7 +43,8 @@
       background: #0f172a;
       padding: 15px;
       margin: 15px 0;
-      border-radius: 10px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(99,102,241,0.2);
     }
 
     .turma {
@@ -42,14 +53,27 @@
     }
 
     button {
-      margin-top: 10px;
+      margin: 5px;
       padding: 8px 12px;
       border: none;
       border-radius: 8px;
-      background: #22c55e;
-      color: black;
       font-weight: bold;
       cursor: pointer;
+    }
+
+    .resolver {
+      background: #22c55e;
+      color: black;
+    }
+
+    .ocultar {
+      background: #64748b;
+      color: white;
+    }
+
+    h2 {
+      margin-top: 30px;
+      color: #c7d2fe;
     }
   </style>
 </head>
@@ -57,7 +81,7 @@
 <body>
 
 <div class="logo">
-  <img src="https://cdn-icons-png.flaticon.com/512/616/616490.png">
+  <div class="olho">👁️</div>
   <h1>Adherbal Vox</h1>
   <p>Painel da Coordenação</p>
 </div>
@@ -100,19 +124,17 @@ async function carregarSugestoes() {
   lista.innerHTML = ""
   resolvidas.innerHTML = ""
 
-  // APROVADAS
   const { data: aprovadas } = await client
     .from('sugestoes')
     .select('*')
     .eq('status', 'aprovado')
 
-  // RESOLVIDAS
   const { data: feitas } = await client
     .from('sugestoes')
     .select('*')
     .eq('status', 'resolvido')
 
-  // MOSTRAR APROVADAS
+  // APROVADAS
   if (aprovadas && aprovadas.length > 0) {
     aprovadas.forEach(s => {
 
@@ -122,17 +144,18 @@ async function carregarSugestoes() {
       div.innerHTML = `
         <p><strong>${s.sugestao}</strong></p>
         <p class="turma">Turma: ${s.turma || "Não informado"}</p>
-        <button onclick="resolver(${s.id})">✔ Resolver</button>
+
+        <button class="resolver" onclick="resolver(${s.id})">✔ Resolver</button>
+        <button class="ocultar" onclick="ocultar(${s.id})">👁️ Parar de exibir</button>
       `
 
       lista.appendChild(div)
-
     })
   } else {
     lista.innerHTML = "<p>Nada novo 👀</p>"
   }
 
-  // MOSTRAR RESOLVIDAS
+  // RESOLVIDAS
   if (feitas && feitas.length > 0) {
     feitas.forEach(s => {
 
@@ -145,24 +168,30 @@ async function carregarSugestoes() {
       `
 
       resolvidas.appendChild(div)
-
     })
   } else {
     resolvidas.innerHTML = "<p>Nenhuma resolvida ainda.</p>"
   }
-
 }
 
 // ✔ RESOLVER
 async function resolver(id) {
-
   await client
     .from('sugestoes')
     .update({ status: 'resolvido' })
     .match({ id: id })
 
   carregarSugestoes()
+}
 
+// 👁️ OCULTAR
+async function ocultar(id) {
+  await client
+    .from('sugestoes')
+    .update({ status: 'oculto' })
+    .match({ id: id })
+
+  carregarSugestoes()
 }
 
 // 🚀 INICIAR
