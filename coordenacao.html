@@ -125,15 +125,20 @@ async function carregarSugestoes() {
   lista.innerHTML = ""
   resolvidas.innerHTML = ""
 
-  const { data: aprovadas } = await client
+  const { data: aprovadas, error: err1 } = await client
     .from('sugestoes')
     .select('*')
     .eq('status', 'aprovado')
 
-  const { data: feitas } = await client
+  const { data: feitas, error: err2 } = await client
     .from('sugestoes')
     .select('*')
     .eq('status', 'resolvido')
+
+  if (err1 || err2) {
+    lista.innerHTML = "<p>Erro ao carregar dados 😬</p>"
+    return
+  }
 
   // 📌 APROVADAS
   if (aprovadas && aprovadas.length > 0) {
