@@ -5,34 +5,20 @@
 <title>Adherbal Vox - Sugestões</title>
 
 <style>
-
-/* 🔥 FIX GLOBAL */
-* {
-  box-sizing: border-box;
-}
-
 body {
   font-family: Arial;
   background: linear-gradient(135deg, #000000, #020617);
   color: #fefce8;
-  margin: 0;
-  padding: 0;
-
-  /* CENTRALIZAÇÃO REAL */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
   text-align: center;
-}
-
-.container {
-  width: 100%;
-  max-width: 520px;
+  margin: 0;
   padding: 20px;
 }
 
-/* TOPO */
+.container {
+  max-width: 520px;
+  margin: auto;
+}
+
 .topo {
   margin-bottom: 20px;
 }
@@ -66,9 +52,9 @@ textarea, select {
   background: #020617;
   color: #fefce8;
   font-size: 14px;
+  box-sizing: border-box;
 }
 
-/* textarea */
 textarea {
   height: 120px;
   resize: none;
@@ -99,7 +85,6 @@ button:hover {
   min-height: 20px;
   font-size: 14px;
 }
-
 </style>
 </head>
 
@@ -107,50 +92,89 @@ button:hover {
 
 <div class="container">
 
-  <div class="topo">
-    <div class="icone">👁️ ⭐ 📺</div>
-    <h1>Adherbal Vox</h1>
-    <p>Envie sua sugestão de forma anônima</p>
-  </div>
+<div class="topo">
+  <div class="icone">👁️ ⭐ 📺</div>
+  <h1>Adherbal Vox</h1>
+  <p>Envie sua sugestão de forma anônima</p>
+</div>
 
-  <div class="card">
+<div class="card">
 
-    <select id="turma">
-      <option value="">Selecione sua turma</option>
-      <option>6A</option><option>6B</option>
-      <option>7A</option><option>7B</option>
-      <option>8A</option><option>8B</option>
-      <option>9A</option><option>9B</option><option>9C</option>
-      <option>1A</option><option>1B</option><option>1C</option>
-      <option>2A</option><option>2B</option><option>2C</option>
-      <option>3A</option><option>3B</option><option>3C</option>
-    </select>
+<select id="turma">
+  <option value="">Selecione sua turma</option>
 
-    <textarea id="texto" placeholder="Digite sua sugestão..."></textarea>
+  <option>6A</option>
+  <option>6B</option>
 
-    <button onclick="enviar()">Enviar sugestão</button>
+  <option>7A</option>
+  <option>7B</option>
 
-    <p class="mensagem" id="msg"></p>
+  <option>8A</option>
+  <option>8B</option>
 
-  </div>
+  <option>9A</option>
+  <option>9B</option>
+  <option>9C</option>
 
+  <option>1A</option>
+  <option>1B</option>
+  <option>1C</option>
+
+  <option>2A</option>
+  <option>2B</option>
+  <option>2C</option>
+
+  <option>3A</option>
+  <option>3B</option>
+  <option>3C</option>
+</select>
+
+<textarea id="texto" placeholder="Digite sua sugestão..."></textarea>
+
+<button onclick="enviar()">Enviar sugestão</button>
+
+<p class="mensagem" id="msg"></p>
+
+</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <script>
 
-// 🔗 SUPABASE
+// 🔗 SUPABASE CORRIGIDO
+const supabaseUrl = "https://tjoormwrszetarhlfpmt.supabase.co"
+
+const supabaseKey = "sb_publishable_zOCfyuybTdMRFnc__LB_Sg_puROfwrD"
+
 const client = window.supabase.createClient(
-  "https://tjoormwrszetarhlfpmt.supabase.co",
-  "sb_publishable_zOCfyuybTdMRFnc__LB_Sg_puROfwrD"
+  supabaseUrl,
+  supabaseKey
 )
 
 // 🚫 PALAVRAS PROIBIDAS
 const palavrasProibidas = [
-  "merda","porra","caralho","foda","foder","nazismo","fuder",
-  "pika","piroca","buceta","viado","gay","abusador","abusado",
-  "molestado","estuprado","estupro","estuprador","nazista","epstein","cu"
+  "merda",
+  "porra",
+  "caralho",
+  "foda",
+  "foder",
+  "nazismo",
+  "fuder",
+  "pika",
+  "piroca",
+  "buceta",
+  "viado",
+  "gay",
+  "abusador",
+  "abusado",
+  "molestado",
+  "estuprado",
+  "estupro",
+  "estuprador",
+  "nazista",
+  "epstein",
+  "cu"
 ]
 
 // 🚀 ENVIAR
@@ -162,37 +186,54 @@ async function enviar() {
 
   msg.innerText = ""
 
+  // turma obrigatória
   if (!turma) {
     msg.innerText = "Selecione sua turma!"
     return
   }
 
+  // mínimo
   if (texto.length < 5) {
     msg.innerText = "Sugestão muito curta! (mínimo 5 caracteres)"
     return
   }
 
+  // máximo
   if (texto.length > 300) {
     msg.innerText = "Sugestão muito longa! (máximo 300 caracteres)"
     return
   }
 
+  // filtro
   for (let palavra of palavrasProibidas) {
+
     const regex = new RegExp(`\\b${palavra}\\b`, "i")
+
     if (regex.test(texto)) {
       msg.innerText = `Palavra inadequada: "${palavra}"`
       return
     }
   }
 
+  // envio
   const { error } = await client
     .from("sugestoes")
-    .insert([{ sugestao: texto, turma: turma, status: "pendente" }])
+    .insert([
+      {
+        sugestao: texto,
+        turma: turma,
+        status: "pendente"
+      }
+    ])
 
+  // resposta
   if (error) {
+    console.log(error)
     msg.innerText = "Erro ao enviar 😬"
   } else {
+
     msg.innerText = "Sugestão enviada! ✅"
+
     document.getElementById("texto").value = ""
     document.getElementById("turma").value = ""
   }
